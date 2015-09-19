@@ -1,0 +1,18 @@
+{
+  "name": "moonmaster",
+  "version": "0.0.0",
+  "description": "Your ARE the Moon Master!",
+  "main": "index.js",
+  "author": {
+    "name": "Cody Phillips",
+    "email": "therealclphillips@gamil.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "phaser": "2.4.3",
+    "browserify": "^11.1.0",
+    "gulp": "^3.9.0",
+    "merge-stream": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
