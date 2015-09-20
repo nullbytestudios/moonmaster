@@ -7,6 +7,8 @@
     this.joystick = null;
     this.actionButton = null;
     this.movementSpeed = 100;
+    this.hitboxW = 30;
+    this.hitboxH = 30;
   };
   
   Player.prototype.getEntity = function getEntity() {
@@ -20,13 +22,22 @@
   Player.prototype.create = function create(joystick, actionButton) {
     this.joystick = joystick;
     this.actionButton = actionButton;
+
+    // Attach sprite to player
     this.entity = this.game.add.sprite(
       this.game.world.centerX,
       this.game.world.centerY,
       'player'
     );
+
     this.entity.animations.add('walk');
+
+    // Enable physics
     this.game.physics.arcade.enable(this.entity);
+    
+    // Set hitbox dimensions
+    this.entity.body.setSize(this.hitboxW, this.hitboxH);
+    // Enable collision
     this.entity.body.collideWorldBounds = true;
   }
   

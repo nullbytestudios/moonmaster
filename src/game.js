@@ -16,6 +16,9 @@
   //require('./level3.js')(game);
   
   function preload() {
+    // Disable antialiasing
+    game.stage.smoothed = false;
+
     player.preload();
   }
   
