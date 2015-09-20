@@ -16,7 +16,11 @@
   }
   
   Player.prototype.preload = function preload() {
-    this.game.load.spritesheet('player', 'assets/textures/sprites.gif', 42, 30, 3);
+    this.game.load.atlas(
+      'player',
+      'assets/textures/sprites.gif',
+      'assets/textures/atlases/player.json'
+    );
   }
 
   Player.prototype.create = function create(joystick, actionButton) {
@@ -30,7 +34,14 @@
       'player'
     );
 
-    this.entity.animations.add('walk');
+    this.entity.animations.add(
+      'walk',
+      Phaser.Animation.generateFrameNames('player/walk', 1, 3, '', 2)
+    );
+    this.entity.animations.add(
+      'victory',
+      Phaser.Animation.generateFrameNames('player/victory', 1, 6, '', 2)
+    );
 
     // Enable physics
     this.game.physics.arcade.enable(this.entity);
