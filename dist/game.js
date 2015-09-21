@@ -5,43 +5,65 @@
     600,
     Phaser.AUTO,
     '',
-    {preload: preload, create: create, update: update, render: render }
+    null,
+    false,
+    false
   );
-  var joystick;
-  var actionButton;
   
-  var player = require('./player.js');
-  player = new player(game); // TODO: why can't we requir('./player.js')(game);?
-  //require('./level1.js')(game);
-  //require('./level2.js')(game);
-  //require('./level3.js')(game);
-  
-  function preload() {
-    // Disable antialiasing
-    game.stage.smoothed = false;
-
-    player.preload();
-  }
-  
-  function create() {
-    joystick = game.input.keyboard.createCursorKeys();
-    actionButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    
-    game.physics.startSystem(Phaser.Physics.ARCADE);
-  
-    player.create(joystick, actionButton);
-  }
-  
-  function update() {
-    player.update();
-  }
-  
-  function render() {
-    player.render();
-  }
+  game.state.add('menu', require('./menu.js'));
+  game.state.start('menu');
+  game.physics.startSystem(Phaser.Physics.ARCADE);
 })();
 
-},{"./player.js":2}],2:[function(require,module,exports){
+},{"./menu.js":3}],2:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
+  var Level1 = module.exports = function Level1() {
+
+  };
+  var player = require('./player.js');
+  
+  Level1.prototype = {
+    preload: function () {
+      player = new player(this);
+      player.preload();
+    },
+    create: function () {
+      player.create();
+    },
+    update: function () {
+      player.update();
+    }
+  };
+  
+})();
+},{"./player.js":4}],3:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
+  var Menu = module.exports = function Menu() {
+
+  };
+  
+  Menu.prototype = {
+    preload: function () {
+
+    },
+    create: function () {
+      // Set level1 state
+      this.state.add('level1', require('./level1.js'));
+    },
+    update: function () {
+      //
+      // TODO: Display menu screen, wait for input, then change state to level1
+      //
+      this.state.start('level1');
+    }
+  };
+  
+})();
+},{"./level1.js":2}],4:[function(require,module,exports){
 ;(function () {
   'use strict';
   
@@ -67,9 +89,9 @@
     );
   }
 
-  Player.prototype.create = function create(joystick, actionButton) {
-    this.joystick = joystick;
-    this.actionButton = actionButton;
+  Player.prototype.create = function create() {
+    this.joystick = this.game.input.keyboard.createCursorKeys();
+    this.actionButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     // Attach sprite to player
     this.entity = this.game.add.sprite(

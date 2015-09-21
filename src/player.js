@@ -23,9 +23,9 @@
     );
   }
 
-  Player.prototype.create = function create(joystick, actionButton) {
-    this.joystick = joystick;
-    this.actionButton = actionButton;
+  Player.prototype.create = function create() {
+    this.joystick = this.game.input.keyboard.createCursorKeys();
+    this.actionButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     // Attach sprite to player
     this.entity = this.game.add.sprite(
