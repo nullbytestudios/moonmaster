@@ -1,6 +1,8 @@
 ;(function() {
   'use strict';
   
+  var Level1 = require('./level1.js');
+  
   var Menu = module.exports = function Menu() {
 
   };
@@ -11,7 +13,7 @@
     },
     create: function () {
       // Set level1 state
-      this.state.add('level1', require('./level1.js'));
+      this.state.add('level1', Level1);
     },
     update: function () {
       //

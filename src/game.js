@@ -1,7 +1,16 @@
 ;(function () {
+  var game;
+
+  var Boot = require('./boot.js');
+  var minWidth = 256;
+  var minHeight = 240;
+  var maxWidth = 768;
+  var maxHeight = 720;
+
+  // Initialize
   var game = new Phaser.Game(
-    800,
-    600,
+    minWidth,
+    minHeight,
     Phaser.AUTO,
     '',
     null,
@@ -9,7 +18,15 @@
     false
   );
   
-  game.state.add('menu', require('./menu.js'));
-  game.state.start('menu');
-  game.physics.startSystem(Phaser.Physics.ARCADE);
+  // Start the game
+  game.state.add('boot', Boot);
+  game.state.start(
+    'boot',
+    true,
+    false,
+    minWidth,
+    minHeight,
+    maxWidth,
+    maxHeight
+  );
 })();
