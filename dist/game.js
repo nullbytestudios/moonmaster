@@ -22,11 +22,6 @@
     preload: function () {
       this.physics.startSystem(Phaser.Physics.ARCADE);
 
-      console.log(this.minWidth);
-      console.log(this.minHeight);
-      console.log(this.maxWidth);
-      console.log(this.minHeight);
-
       this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
       this.scale.minWidth = this.minWidth;
       this.scale.minHeight = this.minHeight;
@@ -45,7 +40,7 @@
   };
   
 })();
-},{"./menu.js":4}],2:[function(require,module,exports){
+},{"./menu.js":7}],2:[function(require,module,exports){
 ;(function () {
   var game;
 
@@ -83,8 +78,53 @@
 ;(function() {
   'use strict';
   
+  var Goal = module.exports = function Goal(game) {
+    this.game = game;
+    this.entity = null;
+    this.hitboxW = 20;
+    this.hitboxH = 4;
+  };
+  
+  Goal.prototype = {
+    getEntity: function getEntity() {
+      return this.entity;
+    },
+    preload:function preload() {
+      this.game.load.atlas(
+        'goal',
+        'assets/textures/sprites.gif',
+        'assets/textures/atlases/goal.json'
+      )
+    },
+    create: function create(posX, posY) {
+      // Attach sprite to goal
+      this.entity = this.game.add.sprite(
+        posX,
+        posY,
+        'goal'
+      );
+
+      // Enable physics
+      this.game.physics.arcade.enable(this.entity);
+
+      // Set hitbox dimensions
+      this.entity.body.setSize(this.hitboxW, this.hitboxH);
+      this.entity.body.moves = false;
+    }
+  };
+  
+})();
+},{}],4:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
+  var Level2 = require('./level2.js');
   var Player = require('./player.js');
+  var Goal = require('./goal.js');
   var player;
+  var goal;
+  var map;
+  var layer;
   
   var Level1 = module.exports = function Level1() {
 
@@ -92,19 +132,143 @@
   
   Level1.prototype = {
     preload: function () {
+      this.load.tilemap('map', 'assets/textures/tilemaps/level1.json', null, Phaser.Tilemap.TILED_JSON);
+      this.load.image('bg', 'assets/textures/bg.gif');
+
       player = new Player(this);
       player.preload();
+
+      goal = new Goal(this);
+      goal.preload();
     },
     create: function () {
-      player.create(this.game.world.centerX, this.game.world.centerY);
+      map = this.add.tilemap('map');
+      map.addTilesetImage('bg');
+      map.setCollision(1);
+      layer = map.createLayer('walls');
+      map.debug = true;
+
+      // Position entities
+      goal.create(6.5*16, 3*16);
+      player.create(6.75*16, 12*16);
+
+      this.state.add('level2', Level2);
     },
     update: function () {
+      var state = this;
+
+      // Collide walls
+      state.physics.arcade.collide(player.getEntity(), layer);
+
+      // End of level?
+      state.physics.arcade.collide(player.getEntity(), goal.getEntity(), function () {
+        player.levelComplete(true);
+        state.state.start('level2');
+      });
       player.update();
     }
   };
   
 })();
-},{"./player.js":5}],4:[function(require,module,exports){
+},{"./goal.js":3,"./level2.js":5,"./player.js":8}],5:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
+  var Level3 = require('./level3.js');
+  var Player = require('./player.js');
+  var Goal = require('./goal.js');
+  var player;
+  var goal;
+  var map;
+  var layer;
+  
+  var Level2 = module.exports = function Level1() {
+
+  };
+  
+  Level2.prototype = {
+    preload: function () {
+      this.load.tilemap('map', 'assets/textures/tilemaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
+      this.load.image('bg', 'assets/textures/bg.gif');
+
+      player = new Player(this);
+      player.preload();
+
+      goal = new Goal(this);
+      goal.preload();
+    },
+    create: function () {
+      map = this.add.tilemap('map');
+      map.addTilesetImage('bg');
+      map.setCollision(1);
+      layer = map.createLayer('walls');
+      map.debug = true;
+
+      // Position entities
+      goal.create(3.5*16, 4*16);
+      player.create(6*16, 3*16);
+
+      this.state.add('level3', Level3);
+    },
+    update: function () {
+      var state = this;
+
+      // Collide walls
+      state.physics.arcade.collide(player.getEntity(), layer);
+
+      // End of level?
+      state.physics.arcade.collide(player.getEntity(), goal.getEntity(), function () {
+        player.levelComplete(true);
+        state.state.start('level3');
+      });
+      player.update();
+    }
+  };
+  
+})();
+},{"./goal.js":3,"./level3.js":6,"./player.js":8}],6:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
+  var Player = require('./player.js');
+  var player;
+  var map;
+  var layer;
+  
+  var Level3 = module.exports = function Level1() {
+
+  };
+  
+  Level3.prototype = {
+    preload: function () {
+      this.load.tilemap('map', 'assets/textures/tilemaps/level3.json', null, Phaser.Tilemap.TILED_JSON);
+      this.load.image('bg', 'assets/textures/bg.gif');
+
+      player = new Player(this);
+      player.preload();
+    },
+    create: function () {
+      map = this.add.tilemap('map');
+      map.addTilesetImage('bg');
+      map.setCollision(1);
+      layer = map.createLayer('walls');
+      map.debug = true;
+
+      // Position entities
+      player.create(6.75*16, 12*16);
+    },
+    update: function () {
+      var state = this;
+
+      // Collide walls
+      state.physics.arcade.collide(player.getEntity(), layer);
+
+      player.update();
+    }
+  };
+  
+})();
+},{"./player.js":8}],7:[function(require,module,exports){
 ;(function() {
   'use strict';
   
@@ -131,7 +295,7 @@
   };
   
 })();
-},{"./level1.js":3}],5:[function(require,module,exports){
+},{"./level1.js":4}],8:[function(require,module,exports){
 ;(function () {
   'use strict';
   
@@ -143,11 +307,15 @@
     this.movementSpeed = 100;
     this.hitboxW = 30;
     this.hitboxH = 30;
+    this.victory = false;
   };
   
   Player.prototype = {
     getEntity: function getEntity() {
       return this.entity;
+    },
+    levelComplete: function levelComplete(complete) {
+      this.victory = complete;
     },
     preload:function preload() {
       this.game.load.atlas(
@@ -187,6 +355,11 @@
     update: function update() {
       this.entity.body.velocity.x = 0;
       this.entity.body.velocity.y = 0;
+      
+      if (this.victory) {
+        this.entity.animations.play('victory', 26, true);
+        return;
+      }
   
       var walking = false;
   
@@ -216,9 +389,6 @@
         this.entity.animations.frame = 0;
         this.entity.animations.stop('walk');
       }
-    },
-    render: function render() {
-      
     }
   };
 })();

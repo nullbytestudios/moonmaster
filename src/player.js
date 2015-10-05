@@ -9,11 +9,15 @@
     this.movementSpeed = 100;
     this.hitboxW = 30;
     this.hitboxH = 30;
+    this.victory = false;
   };
   
   Player.prototype = {
     getEntity: function getEntity() {
       return this.entity;
+    },
+    levelComplete: function levelComplete(complete) {
+      this.victory = complete;
     },
     preload:function preload() {
       this.game.load.atlas(
@@ -53,6 +57,11 @@
     update: function update() {
       this.entity.body.velocity.x = 0;
       this.entity.body.velocity.y = 0;
+      
+      if (this.victory) {
+        this.entity.animations.play('victory', 26, true);
+        return;
+      }
   
       var walking = false;
   
@@ -82,9 +91,6 @@
         this.entity.animations.frame = 0;
         this.entity.animations.stop('walk');
       }
-    },
-    render: function render() {
-      
     }
   };
 })();

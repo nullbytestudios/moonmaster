@@ -21,11 +21,6 @@
     preload: function () {
       this.physics.startSystem(Phaser.Physics.ARCADE);
 
-      console.log(this.minWidth);
-      console.log(this.minHeight);
-      console.log(this.maxWidth);
-      console.log(this.minHeight);
-
       this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
       this.scale.minWidth = this.minWidth;
       this.scale.minHeight = this.minHeight;
