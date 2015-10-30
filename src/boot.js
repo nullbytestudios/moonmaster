@@ -8,9 +8,9 @@
   };
   
   Boot.prototype = {
-    minWidth: 256,
+    minWidth: 320,
     minHeight: 240,
-    maxWidth: 256,
+    maxWidth: 320,
     maxHeight: 240,
     init: function (minWidth, minHeight, maxWidth, maxHeight) {
       this.minWidth = minWidth;
@@ -19,6 +19,27 @@
       this.maxHeight = maxHeight;
     },
     preload: function () {
+      this.load.image('bg', 'assets/textures/bg.gif');
+      this.load.atlas(
+        'player',
+        'assets/textures/sprites.gif',
+        'assets/textures/atlases/player.json'
+      );
+      this.load.atlas(
+        'goal',
+        'assets/textures/sprites.gif',
+        'assets/textures/atlases/goal.json'
+      );
+      // load level maps
+      for (var i=1; i<=3; i++) {
+        this.load.tilemap(
+          'level' + i,
+          'assets/textures/tilemaps/level' + i + '.json',
+          null,
+          Phaser.Tilemap.TILED_JSON
+        );
+      }
+      
       this.physics.startSystem(Phaser.Physics.ARCADE);
 
       this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;

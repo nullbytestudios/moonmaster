@@ -9,9 +9,9 @@
   };
   
   Boot.prototype = {
-    minWidth: 256,
+    minWidth: 320,
     minHeight: 240,
-    maxWidth: 256,
+    maxWidth: 320,
     maxHeight: 240,
     init: function (minWidth, minHeight, maxWidth, maxHeight) {
       this.minWidth = minWidth;
@@ -20,6 +20,27 @@
       this.maxHeight = maxHeight;
     },
     preload: function () {
+      this.load.image('bg', 'assets/textures/bg.gif');
+      this.load.atlas(
+        'player',
+        'assets/textures/sprites.gif',
+        'assets/textures/atlases/player.json'
+      );
+      this.load.atlas(
+        'goal',
+        'assets/textures/sprites.gif',
+        'assets/textures/atlases/goal.json'
+      );
+      // load level maps
+      for (var i=1; i<=3; i++) {
+        this.load.tilemap(
+          'level' + i,
+          'assets/textures/tilemaps/level' + i + '.json',
+          null,
+          Phaser.Tilemap.TILED_JSON
+        );
+      }
+      
       this.physics.startSystem(Phaser.Physics.ARCADE);
 
       this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -45,9 +66,9 @@
   var game;
 
   var Boot = require('./boot.js');
-  var minWidth = 256;
+  var minWidth = 320;
   var minHeight = 240;
-  var maxWidth = 768;
+  var maxWidth = 960;
   var maxHeight = 720;
 
   // Initialize
@@ -89,12 +110,8 @@
     getEntity: function getEntity() {
       return this.entity;
     },
-    preload:function preload() {
-      this.game.load.atlas(
-        'goal',
-        'assets/textures/sprites.gif',
-        'assets/textures/atlases/goal.json'
-      )
+    preload: function preload() {
+
     },
     create: function create(posX, posY) {
       // Attach sprite to goal
@@ -132,25 +149,18 @@
   
   Level1.prototype = {
     preload: function () {
-      this.load.tilemap('map', 'assets/textures/tilemaps/level1.json', null, Phaser.Tilemap.TILED_JSON);
-      this.load.image('bg', 'assets/textures/bg.gif');
-
       player = new Player(this);
-      player.preload();
-
       goal = new Goal(this);
-      goal.preload();
     },
     create: function () {
-      map = this.add.tilemap('map');
+      map = this.add.tilemap('level1');
       map.addTilesetImage('bg');
       map.setCollision(1);
       layer = map.createLayer('walls');
-      map.debug = true;
 
       // Position entities
-      goal.create(6.5*16, 3*16);
-      player.create(6.75*16, 12*16);
+      goal.create(136, 56);
+      player.create(138, 182);
 
       this.state.add('level2', Level2);
     },
@@ -182,31 +192,25 @@
   var map;
   var layer;
   
-  var Level2 = module.exports = function Level1() {
+  var Level2 = module.exports = function Level2() {
 
   };
   
   Level2.prototype = {
     preload: function () {
-      this.load.tilemap('map', 'assets/textures/tilemaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
-      this.load.image('bg', 'assets/textures/bg.gif');
-
       player = new Player(this);
-      player.preload();
-
       goal = new Goal(this);
-      goal.preload();
     },
     create: function () {
-      map = this.add.tilemap('map');
+      map = this.add.tilemap('level2');
       map.addTilesetImage('bg');
       map.setCollision(1);
       layer = map.createLayer('walls');
       map.debug = true;
 
       // Position entities
-      goal.create(3.5*16, 4*16);
-      player.create(6*16, 3*16);
+      goal.create(53, 100);
+      player.create(88, 76);
 
       this.state.add('level3', Level3);
     },
@@ -235,27 +239,28 @@
   var map;
   var layer;
   
-  var Level3 = module.exports = function Level1() {
+  var Level3 = module.exports = function Level3() {
 
   };
   
   Level3.prototype = {
     preload: function () {
-      this.load.tilemap('map', 'assets/textures/tilemaps/level3.json', null, Phaser.Tilemap.TILED_JSON);
-      this.load.image('bg', 'assets/textures/bg.gif');
-
       player = new Player(this);
-      player.preload();
     },
     create: function () {
-      map = this.add.tilemap('map');
+      map = this.add.tilemap('level3');
       map.addTilesetImage('bg');
       map.setCollision(1);
       layer = map.createLayer('walls');
       map.debug = true;
+      
+      // draw boxes to smooth level
+      var box = new Phaser.Rectangle(16, 0, 16, 16);
+      this.add.image(120, 56, 'bg', 1).crop(box);
+      this.add.image(168, 56, 'bg', 1).crop(box);
 
       // Position entities
-      player.create(6.75*16, 12*16);
+      player.create(138, 182);
     },
     update: function () {
       var state = this;
@@ -318,11 +323,7 @@
       this.victory = complete;
     },
     preload:function preload() {
-      this.game.load.atlas(
-        'player',
-        'assets/textures/sprites.gif',
-        'assets/textures/atlases/player.json'
-      )
+
     },
     create: function create(posX, posY) {
       this.joystick = this.game.input.keyboard.createCursorKeys();

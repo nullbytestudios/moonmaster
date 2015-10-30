@@ -9,31 +9,25 @@
   var map;
   var layer;
   
-  var Level2 = module.exports = function Level1() {
+  var Level2 = module.exports = function Level2() {
 
   };
   
   Level2.prototype = {
     preload: function () {
-      this.load.tilemap('map', 'assets/textures/tilemaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
-      this.load.image('bg', 'assets/textures/bg.gif');
-
       player = new Player(this);
-      player.preload();
-
       goal = new Goal(this);
-      goal.preload();
     },
     create: function () {
-      map = this.add.tilemap('map');
+      map = this.add.tilemap('level2');
       map.addTilesetImage('bg');
       map.setCollision(1);
       layer = map.createLayer('walls');
       map.debug = true;
 
       // Position entities
-      goal.create(3.5*16, 4*16);
-      player.create(6*16, 3*16);
+      goal.create(53, 100);
+      player.create(88, 76);
 
       this.state.add('level3', Level3);
     },

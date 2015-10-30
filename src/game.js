@@ -2,9 +2,9 @@
   var game;
 
   var Boot = require('./boot.js');
-  var minWidth = 256;
+  var minWidth = 320;
   var minHeight = 240;
-  var maxWidth = 768;
+  var maxWidth = 960;
   var maxHeight = 720;
 
   // Initialize

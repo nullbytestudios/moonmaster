@@ -20,11 +20,7 @@
       this.victory = complete;
     },
     preload:function preload() {
-      this.game.load.atlas(
-        'player',
-        'assets/textures/sprites.gif',
-        'assets/textures/atlases/player.json'
-      )
+
     },
     create: function create(posX, posY) {
       this.joystick = this.game.input.keyboard.createCursorKeys();

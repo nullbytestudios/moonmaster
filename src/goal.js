@@ -12,12 +12,8 @@
     getEntity: function getEntity() {
       return this.entity;
     },
-    preload:function preload() {
-      this.game.load.atlas(
-        'goal',
-        'assets/textures/sprites.gif',
-        'assets/textures/atlases/goal.json'
-      )
+    preload: function preload() {
+
     },
     create: function create(posX, posY) {
       // Attach sprite to goal
