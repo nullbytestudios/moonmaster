@@ -12,7 +12,7 @@
     minWidth,
     minHeight,
     Phaser.AUTO,
-    '',
+    'moonmaster',
     null,
     false,
     false
