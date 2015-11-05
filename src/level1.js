@@ -39,7 +39,12 @@
       // End of level?
       state.physics.arcade.collide(player.getEntity(), goal.getEntity(), function () {
         player.levelComplete(true);
-        state.state.start('level2');
+        setTimeout(
+          function () {
+            state.state.start('level2')
+          },
+          2500
+        );
       });
       player.update();
     }

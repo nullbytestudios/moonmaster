@@ -44,6 +44,16 @@
       "frame": {"x":210, "y":0, "w":42, "h":30},
       "spriteSourceSize": {"x":210,"y":0,"w":42,"h":30},
       "sourceSize": {"w":42,"h":30}
+    },
+    "player/attack01": {
+      "frame": {"x":126, "y":0, "w":42, "h":30},
+      "spriteSourceSize": {"x":126,"y":0,"w":42,"h":30},
+      "sourceSize": {"w":42,"h":30}
+    },
+    "player/attack02": {
+      "frame": {"x":0, "y":0, "w":42, "h":30},
+      "spriteSourceSize": {"x":0,"y":0,"w":42,"h":30},
+      "sourceSize": {"w":42,"h":30}
     }
     
   }

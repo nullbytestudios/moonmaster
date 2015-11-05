@@ -173,7 +173,12 @@
       // End of level?
       state.physics.arcade.collide(player.getEntity(), goal.getEntity(), function () {
         player.levelComplete(true);
-        state.state.start('level2');
+        setTimeout(
+          function () {
+            state.state.start('level2')
+          },
+          2500
+        );
       });
       player.update();
     }
@@ -223,7 +228,12 @@
       // End of level?
       state.physics.arcade.collide(player.getEntity(), goal.getEntity(), function () {
         player.levelComplete(true);
-        state.state.start('level3');
+        setTimeout(
+          function () {
+            state.state.start('level3')
+          },
+          2500
+        );
       });
       player.update();
     }
@@ -312,7 +322,9 @@
     this.movementSpeed = 100;
     this.hitboxW = 30;
     this.hitboxH = 30;
+    this.fps = 26;
     this.victory = false;
+    this.walking = false;
   };
   
   Player.prototype = {
@@ -344,6 +356,10 @@
         'victory',
         Phaser.Animation.generateFrameNames('player/victory', 1, 6, '', 2)
       );
+      this.entity.animations.add(
+        'attack',
+        Phaser.Animation.generateFrameNames('player/attack', 1, 2, '', 2)
+      );
   
       // Enable physics
       this.game.physics.arcade.enable(this.entity);
@@ -352,44 +368,59 @@
       this.entity.body.setSize(this.hitboxW, this.hitboxH);
       // Enable collision
       this.entity.body.collideWorldBounds = true;
+      
+      // Bind attack
+      this.actionButton.onDown.add(this.attack, this);
     },
     update: function update() {
       this.entity.body.velocity.x = 0;
       this.entity.body.velocity.y = 0;
-      
+      this.walking = false;
+
       if (this.victory) {
-        this.entity.animations.play('victory', 26, true);
+        this.entity.animations.play('victory', this.fps, true);
         return;
       }
-  
-      var walking = false;
-  
+      
       if (this.joystick.up.isDown) {
-        this.entity.body.velocity.y = -this.movementSpeed;
-        walking = true;
+        this.move(null, -this.movementSpeed);
       } else if (this.joystick.down.isDown) {
-        this.entity.body.velocity.y = this.movementSpeed;
-        walking = true;
+        this.move(null, this.movementSpeed);
       }
-    
+
       if (this.joystick.left.isDown) {
-        this.entity.body.velocity.x = -this.movementSpeed;
-        walking = true;
+        this.move(-this.movementSpeed);
       } else if (this.joystick.right.isDown) {
-        this.entity.body.velocity.x = this.movementSpeed;
-        walking = true;
+        this.move(this.movementSpeed);
       }
-  
-      if (this.actionButton.justPressed) {
-        // TODO: animate attack
+      
+      if (!this.walking) {
+        this.resetAnimation('walk');
       }
-  
-      if (walking) {
-        this.entity.animations.play('walk', 26, true);
-      } else {
-        this.entity.animations.frame = 0;
-        this.entity.animations.stop('walk');
+    },
+    resetAnimation: function resetAnimation(name) {
+      if (name !== null && this.entity.animations.getAnimation(name).isPlaying) {
+        this.entity.animations.stop(name, true);
       }
+    },
+    move: function move(x, y) {
+      if (typeof x === 'number') {
+        this.entity.body.velocity.x = x;
+      }
+      if (typeof y === 'number') {
+        this.entity.body.velocity.y = y;
+      }
+      this.entity.animations.play('walk', this.fps, true);
+      this.walking = true;
+    },
+    attack: function attack() {
+      this.walking = false;
+      this.entity.animations.play('attack', this.fps, false);
+      /*
+      #
+      # TODO: During normal play, swing the sword. If in battle, fire beam.
+      #
+      */
     }
   };
 })();
