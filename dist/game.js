@@ -107,7 +107,7 @@
   var Goal = module.exports = function Goal(game) {
     this.game = game;
     this.entity = null;
-    this.hitboxW = 20;
+    this.hitboxW = 10;
     this.hitboxH = 4;
   };
   
@@ -268,7 +268,7 @@
       map.debug = true;
 
       // Position entities
-      goal.create(53, 100);
+      goal.create(50, 96);
       player.create(88, 76);
 
       this.state.add('level3', Level3);
@@ -384,8 +384,9 @@
     this.movementSpeed = 100;
     this.hitboxW = 30;
     this.hitboxH = 30;
-    this.fps = 24;
-    this.victory = false;
+    this.fps = 16;
+    this.victoryLevel = false;
+    this.victoryGame = false;
     this.walking = false;
   };
   
@@ -394,7 +395,10 @@
       return this.entity;
     },
     levelComplete: function levelComplete(complete) {
-      this.victory = complete;
+      this.victoryLevel = complete;
+    },
+    gameComplete: function gameComplete(complete) {
+      this.victoryGame = complete;
     },
     preload:function preload() {
 
@@ -439,7 +443,11 @@
       this.entity.body.velocity.y = 0;
       this.walking = false;
 
-      if (this.victory) {
+      if (this.victoryLevel) {
+        this.entity.animations.play('attack', this.fps, true);
+        return;        
+      }
+      if (this.victoryGame) {
         this.entity.animations.play('victory', this.fps, true);
         return;
       }

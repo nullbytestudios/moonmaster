@@ -26,7 +26,7 @@
       map.debug = true;
 
       // Position entities
-      goal.create(53, 100);
+      goal.create(50, 96);
       player.create(88, 76);
 
       this.state.add('level3', Level3);

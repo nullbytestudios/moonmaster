@@ -4,7 +4,7 @@
   var Goal = module.exports = function Goal(game) {
     this.game = game;
     this.entity = null;
-    this.hitboxW = 20;
+    this.hitboxW = 10;
     this.hitboxH = 4;
   };
   
