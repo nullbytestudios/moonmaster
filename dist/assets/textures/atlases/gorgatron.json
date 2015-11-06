@@ -1,0 +1,29 @@
+{
+  "frames": {
+    "gorgatron/stomp01": {
+      "frame": {"x":99, "y":30, "w":58, "h":38},
+      "spriteSourceSize": {"x":0,"y":0,"w":42,"h":30},
+      "sourceSize": {"w":46,"h":38}
+    },
+    "gorgatron/stomp02": {
+      "frame": {"x":157, "y":30, "w":58, "h":38},
+      "spriteSourceSize": {"x":0,"y":0,"w":46,"h":38},
+      "sourceSize": {"w":46,"h":38}
+    },
+    "gorgatron/stomp03": {
+      "frame": {"x":99, "y":30, "w":58, "h":38},
+      "spriteSourceSize": {"x":0,"y":0,"w":46,"h":38},
+      "sourceSize": {"w":46,"h":38}
+    },
+    "gorgatron/stomp04": {
+      "frame": {"x":215, "y":30, "w":58, "h":38},
+      "spriteSourceSize": {"x":0,"y":0,"w":46,"h":38},
+      "sourceSize": {"w":46,"h":38}
+    },
+    "gorgatron/die": {
+      "frame": {"x":41, "y":30, "w":58, "h":38},
+      "spriteSourceSize": {"x":6,"y":0,"w":42,"h":30},
+      "sourceSize": {"w":46,"h":38}
+    }
+  }
+}
