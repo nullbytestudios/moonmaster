@@ -31,6 +31,11 @@
         'assets/textures/sprites.gif',
         'assets/textures/atlases/goal.json'
       );
+      this.load.atlas(
+        'gorgatron',
+        'assets/textures/sprites.gif',
+        'assets/textures/atlases/gorgatron.json'
+      );
       // load level maps
       for (var i=1; i<=3; i++) {
         this.load.tilemap(
@@ -61,7 +66,7 @@
   };
   
 })();
-},{"./menu.js":7}],2:[function(require,module,exports){
+},{"./menu.js":8}],2:[function(require,module,exports){
 ;(function () {
   var game;
 
@@ -135,6 +140,55 @@
 ;(function() {
   'use strict';
   
+  var Gorgatron = module.exports = function Gorgatron(game) {
+    this.game = game;
+    this.entity = null;
+    this.hitboxW = 46;
+    this.hitboxH = 38;
+    this.fps = 12;
+  };
+  
+  Gorgatron.prototype = {
+    getEntity: function getEntity() {
+      return this.entity;
+    },
+    preload: function preload() {
+
+    },
+    create: function create(posX, posY) {
+      // Attach sprite to gorgatron
+      this.entity = this.game.add.sprite(
+        posX,
+        posY,
+        'gorgatron'
+      );
+  
+      this.entity.animations.add(
+        'stomp',
+        Phaser.Animation.generateFrameNames('gorgatron/stomp', 1, 4, '', 2)
+      );
+
+      // Enable physics
+      this.game.physics.arcade.enable(this.entity);
+
+      // Set hitbox dimensions
+      this.entity.body.setSize(this.hitboxW, this.hitboxH);
+      this.entity.body.moves = false;
+    },
+    stomp: function stomp() {
+      this.entity.animations.play('stomp', this.fps, true);
+      var entity = this;
+      setTimeout(function () {
+        entity.entity.animations.stop('stomp', true);
+      }, 2000);
+    }
+  };
+  
+})();
+},{}],5:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
   var Level2 = require('./level2.js');
   var Player = require('./player.js');
   var Goal = require('./goal.js');
@@ -177,7 +231,7 @@
           function () {
             state.state.start('level2')
           },
-          2500
+          2000
         );
       });
       player.update();
@@ -185,7 +239,7 @@
   };
   
 })();
-},{"./goal.js":3,"./level2.js":5,"./player.js":8}],5:[function(require,module,exports){
+},{"./goal.js":3,"./level2.js":6,"./player.js":9}],6:[function(require,module,exports){
 ;(function() {
   'use strict';
   
@@ -232,7 +286,7 @@
           function () {
             state.state.start('level3')
           },
-          2500
+          2000
         );
       });
       player.update();
@@ -240,12 +294,14 @@
   };
   
 })();
-},{"./goal.js":3,"./level3.js":6,"./player.js":8}],6:[function(require,module,exports){
+},{"./goal.js":3,"./level3.js":7,"./player.js":9}],7:[function(require,module,exports){
 ;(function() {
   'use strict';
   
   var Player = require('./player.js');
+  var Gorgatron = require('./gorgatron.js');
   var player;
+  var gorgatron;
   var map;
   var layer;
   
@@ -256,6 +312,7 @@
   Level3.prototype = {
     preload: function () {
       player = new Player(this);
+      gorgatron = new Gorgatron(this);
     },
     create: function () {
       map = this.add.tilemap('level3');
@@ -266,11 +323,16 @@
       
       // draw boxes to smooth level
       var box = new Phaser.Rectangle(16, 0, 16, 16);
-      this.add.image(120, 56, 'bg', 1).crop(box);
-      this.add.image(168, 56, 'bg', 1).crop(box);
+      this.add.image(120, 40, 'bg', 1).crop(box);
+      this.add.image(168, 40, 'bg', 1).crop(box);
 
       // Position entities
       player.create(138, 182);
+      gorgatron.create(215, 60);
+      
+      setTimeout(function () {
+        gorgatron.stomp();
+      }, 200);
     },
     update: function () {
       var state = this;
@@ -283,7 +345,7 @@
   };
   
 })();
-},{"./player.js":8}],7:[function(require,module,exports){
+},{"./gorgatron.js":4,"./player.js":9}],8:[function(require,module,exports){
 ;(function() {
   'use strict';
   
@@ -310,7 +372,7 @@
   };
   
 })();
-},{"./level1.js":4}],8:[function(require,module,exports){
+},{"./level1.js":5}],9:[function(require,module,exports){
 ;(function () {
   'use strict';
   
@@ -322,7 +384,7 @@
     this.movementSpeed = 100;
     this.hitboxW = 30;
     this.hitboxH = 30;
-    this.fps = 26;
+    this.fps = 24;
     this.victory = false;
     this.walking = false;
   };
@@ -350,7 +412,7 @@
   
       this.entity.animations.add(
         'walk',
-        Phaser.Animation.generateFrameNames('player/walk', 1, 3, '', 2)
+        Phaser.Animation.generateFrameNames('player/walk', 1, 4, '', 2)
       );
       this.entity.animations.add(
         'victory',

@@ -11,6 +11,11 @@
       "sourceSize": {"w":42,"h":30}
     },
     "player/walk03": {
+      "frame": {"x":0, "y":0, "w":42, "h":30},
+      "spriteSourceSize": {"x":0,"y":0,"w":42,"h":30},
+      "sourceSize": {"w":42,"h":30}
+    },
+    "player/walk04": {
       "frame": {"x":84, "y":0, "w":42, "h":30},
       "spriteSourceSize": {"x":84,"y":0,"w":42,"h":30},
       "sourceSize": {"w":42,"h":30}

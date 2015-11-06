@@ -9,7 +9,7 @@
     this.movementSpeed = 100;
     this.hitboxW = 30;
     this.hitboxH = 30;
-    this.fps = 26;
+    this.fps = 24;
     this.victory = false;
     this.walking = false;
   };
@@ -37,7 +37,7 @@
   
       this.entity.animations.add(
         'walk',
-        Phaser.Animation.generateFrameNames('player/walk', 1, 3, '', 2)
+        Phaser.Animation.generateFrameNames('player/walk', 1, 4, '', 2)
       );
       this.entity.animations.add(
         'victory',

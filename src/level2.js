@@ -44,7 +44,7 @@
           function () {
             state.state.start('level3')
           },
-          2500
+          2000
         );
       });
       player.update();

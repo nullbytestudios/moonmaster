@@ -30,6 +30,11 @@
         'assets/textures/sprites.gif',
         'assets/textures/atlases/goal.json'
       );
+      this.load.atlas(
+        'gorgatron',
+        'assets/textures/sprites.gif',
+        'assets/textures/atlases/gorgatron.json'
+      );
       // load level maps
       for (var i=1; i<=3; i++) {
         this.load.tilemap(
