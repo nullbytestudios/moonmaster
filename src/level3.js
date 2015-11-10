@@ -32,10 +32,6 @@
       // Position entities
       player.create(138, 182);
       gorgatron.create(215, 60);
-      
-      setTimeout(function () {
-        gorgatron.stomp();
-      }, 200);
     },
     update: function () {
       var state = this;
@@ -44,6 +40,7 @@
       state.physics.arcade.collide(player.getEntity(), layer);
 
       player.update();
+      gorgatron.update();
     }
   };
   

@@ -24,6 +24,16 @@
       "frame": {"x":41, "y":30, "w":58, "h":38},
       "spriteSourceSize": {"x":6,"y":0,"w":42,"h":30},
       "sourceSize": {"w":46,"h":38}
+    },
+    "gorgatron/heart": {
+      "frame": {"x":0, "y":68, "w":14, "h":10},
+      "spriteSourceSize": {"x":0,"y":0,"w":14,"h":10},
+      "sourceSize": {"w":14,"h":10}
+    },
+    "gorgatron/broken-heart": {
+      "frame": {"x":0, "y":78, "w":24, "h":17},
+      "spriteSourceSize": {"x":0,"y":0,"w":24,"h":17},
+      "sourceSize": {"w":24,"h":17}
     }
   }
 }
