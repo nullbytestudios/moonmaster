@@ -39,8 +39,23 @@
       // Collide walls
       state.physics.arcade.collide(player.getEntity(), layer);
 
+      // Check for bullet hits
+      state.physics.arcade.overlap(
+        gorgatron.getEntity(),
+        player.getBullets(),
+        function(enemy, bullet) {
+          enemy.kill();
+          enemy.exists = true;
+          enemy.visible = true;
+          player.gameComplete(true);
+        }
+      );
+
       player.update();
       gorgatron.update();
+      if (gorgatron.readyForBattle) {
+        player.inBattle = true;
+      }
     }
   };
   

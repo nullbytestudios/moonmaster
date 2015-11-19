@@ -1,6 +1,8 @@
 ;(function () {
   'use strict';
   
+  var Bullet = require('./bullet.js');
+  
   var Player = module.exports = function Player(game) {
     this.game = game;
     this.entity = null;
@@ -9,13 +11,19 @@
     this.movementSpeed = 100;
     this.hitboxW = 30;
     this.hitboxH = 30;
-    this.fps = 16;
+    this.fps = 20;
+    this.victoryLevelFps = 10;
     this.victoryLevel = false;
     this.victoryGame = false;
     this.walking = false;
+    this.bullets = game.add.group();
   };
   
   Player.prototype = {
+    inBattle: false,
+    getBullets: function getBullets() {
+      return this.bullets;
+    },
     getEntity: function getEntity() {
       return this.entity;
     },
@@ -24,9 +32,6 @@
     },
     gameComplete: function gameComplete(complete) {
       this.victoryGame = complete;
-    },
-    preload:function preload() {
-
     },
     create: function create(posX, posY) {
       this.joystick = this.game.input.keyboard.createCursorKeys();
@@ -62,6 +67,9 @@
       
       // Bind attack
       this.actionButton.onDown.add(this.attack, this);
+      
+      this.bullets.add(new Bullet(this.game));
+      this.game.physics.arcade.enable(this.bullets);
     },
     update: function update() {
       this.entity.body.velocity.x = 0;
@@ -69,7 +77,7 @@
       this.walking = false;
 
       if (this.victoryLevel) {
-        this.entity.animations.play('attack', this.fps, true);
+        this.entity.animations.play('attack', this.victoryLevelFps, true);
         return;        
       }
       if (this.victoryGame) {
@@ -92,6 +100,10 @@
       if (!this.walking) {
         this.resetAnimation('walk');
       }
+      
+      if (this.bulletFired) {
+        this.bullet.update();
+      }
     },
     resetAnimation: function resetAnimation(name) {
       if (name !== null && this.entity.animations.getAnimation(name).isPlaying) {
@@ -110,12 +122,16 @@
     },
     attack: function attack() {
       this.walking = false;
-      this.entity.animations.play('attack', this.fps, false);
-      /*
-      #
-      # TODO: During normal play, swing the sword. If in battle, fire beam.
-      #
-      */
+
+      if (this.inBattle) {
+        this.game.world.bringToTop(this.bullets);
+        var bullet = this.bullets.getFirstDead();
+        if (bullet) {
+          bullet.fire(this.entity.x, this.entity.y, 215, 60);
+        }
+      } else {
+        this.entity.animations.play('attack', this.fps, false);
+      }
     }
   };
 })();

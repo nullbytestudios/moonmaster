@@ -4,14 +4,15 @@
   var Gorgatron = module.exports = function Gorgatron(game) {
     this.game = game;
     this.entity = null;
-    this.emotion = null;
     this.hitboxW = 46;
     this.hitboxH = 38;
     this.fps = 12;
-    this.hit = false;
+    this.hearts = null;
+    this.startTime = 0;
   };
   
   Gorgatron.prototype = {
+    readyForBattle: false,
     getEntity: function getEntity() {
       return this.entity;
     },
@@ -34,11 +35,6 @@
         'die',
         ['gorgatron/die']
       );
-      this.emotion = this.game.add.sprite(
-        posX,
-        posY,
-        'gorgatron'
-      );
 
       // Enable physics
       this.game.physics.arcade.enable(this.entity);
@@ -46,66 +42,54 @@
       // Set hitbox dimensions
       this.entity.body.setSize(this.hitboxW, this.hitboxH);
       this.entity.body.moves = false;
-      
-      var gorgatron = this;
-      setTimeout(function () {
-        gorgatron.stomp();
-      }, 200);
+
+      this.hearts = this.game.add.group(this.entity);
+
+      var deltaY = 12;
+      var numHearts = 3;
+
+      for (var i = 1; i <= numHearts; i++) {
+        this.hearts.create(parseInt(this.hitboxW/2), -(i*deltaY), 'gorgatron', 'gorgatron/heart', false);
+      }
+
+      this.startTime = this.game.time.time;
     },
     update: function update() {
-      if (this.hit) {
+      if (!this.entity.alive) {
+        this.readyForBattle = false;
         this.entity.animations.play('die', this.fps, true);
+        this.game.add.sprite(
+          this.entity.x + 16,
+          this.entity.y - 12,
+          'gorgatron',
+          'gorgatron/broken-heart'
+        );
+        return;
+      }
+      
+      if (this.readyForBattle === false && this.startTime < this.game.time.time-200) {
+        this.stomp();
       }
     },
     stomp: function stomp() {
-      this.entity.animations.play('stomp', this.fps, true);
-      var entity = this;
-      setTimeout(function () {
-        entity.entity.animations.stop('stomp', true);
-        entity.emoteLove();
-      }, 2000);
+      var gorgatron = this;
+      var playTimes = 4;
+      var animation = this.entity.animations.play('stomp', this.fps, true);
+      animation.onLoop.add(function() {
+        if (animation.loopCount >= playTimes) {
+          animation.stop();
+          gorgatron.showLove();
+        }
+      });
     },
-    emoteLove: function emoteLove() {
-      var x = parseInt(this.entity.x+(this.hitboxW/2));
-      var y = this.entity.y;
-      var index = 0;
-      var deltaY = 12;
-      var playTimes = 0;
-      var maxPlayTimes = 3;
-      var hearts = [
-        this.game.add.sprite(x, y - (1*deltaY), 'gorgatron', 'gorgatron/heart'),
-        this.game.add.sprite(x, y - (2*deltaY), 'gorgatron', 'gorgatron/heart'),
-        this.game.add.sprite(x, y - (3*deltaY), 'gorgatron', 'gorgatron/heart')
-      ];
-
-      // hide hearts
-      for (var i = 0; i < hearts.length; i++) {
-        hearts[i].visible = false;
-      } 
-
-      var animateLove = setInterval(function() {
-        // Reset
-        if (index >= hearts.length) {
-          index = 0;
-          hideHearts();
-
-          // End ?
-          if (++playTimes >= maxPlayTimes) {
-            clearInterval(animateLove);
-          }
-          return;
-        }
-        
-        hearts[index].visible = true;
-        index++;
-      }, 200);
-
-      function hideHearts()
-      {
-        for (var i = 0; i < hearts.length; i++) {
-          hearts[i].visible = false;
-        }
+    showLove: function showLove() {
+      /*
+      for (var i = 0; i < this.hearts.children.length; i++) {
+        this.hearts.children[i].visible = true;
       }
+      */
+      this.readyForBattle = true;
+      
     }
   };
   

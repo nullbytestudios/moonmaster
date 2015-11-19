@@ -41,7 +41,7 @@
         player.levelComplete(true);
         setTimeout(
           function () {
-            state.state.start('level2')
+            state.state.start('level2');
           },
           2000
         );

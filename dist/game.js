@@ -66,7 +66,64 @@
   };
   
 })();
-},{"./menu.js":5}],2:[function(require,module,exports){
+},{"./menu.js":9}],2:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
+  var Bullet = module.exports = function Bullet(game) {
+    this.game = game;
+    this.hitboxW = 16;
+    this.hitboxH = 32;
+    this.exists = false;
+    this.endX = 0;
+    this.endY = 0;
+    this.fired = false;
+
+    var projectile = game.add.bitmapData(this.hitboxW, this.hitboxH);
+
+    projectile.ctx.beginPath();
+    projectile.ctx.rect(0, 0, this.hitboxW, this.hitboxH);
+    projectile.ctx.fillStyle = '#ffa500';
+    projectile.ctx.fill();
+    
+    Phaser.Sprite.call(this, game, 0, 0, projectile);
+  };
+  
+  Bullet.prototype = Object.create(Phaser.Sprite.prototype);
+  Bullet.prototype.constructor = Bullet;
+  
+  Bullet.prototype.fire = function fire(startX, startY, endX, endY) {
+    // Can only be fired once
+    if (this.fired) {
+      return;
+    }
+    this.fired = true;
+    this.endX = endX;
+    this.endY = endY;
+    
+    this.reset(startX, startY);
+  };
+  
+  Bullet.prototype.update = function update() {
+    var deltaX = 6;
+    var deltaY = 4;
+
+    if (this.y > this.endY) {
+      // Animate Up
+      this.y -= deltaY;
+    } else if (this.y <= this.endY-deltaY) {
+      // Animate Down
+      this.y += deltaY;
+    } else if (this.x < this.endX) {
+      // Animate Right
+      this.x += deltaX;
+    } else {
+      this.kill();
+    }
+  };
+  
+})();
+},{}],3:[function(require,module,exports){
 ;(function () {
   var game;
 
@@ -100,21 +157,58 @@
   );
 })();
 
-},{"./boot.js":1}],3:[function(require,module,exports){
+},{"./boot.js":1}],4:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
+  var Goal = module.exports = function Goal(game) {
+    this.game = game;
+    this.entity = null;
+    this.hitboxW = 10;
+    this.hitboxH = 4;
+  };
+  
+  Goal.prototype = {
+    getEntity: function getEntity() {
+      return this.entity;
+    },
+    preload: function preload() {
+
+    },
+    create: function create(posX, posY) {
+      // Attach sprite to goal
+      this.entity = this.game.add.sprite(
+        posX,
+        posY,
+        'goal'
+      );
+
+      // Enable physics
+      this.game.physics.arcade.enable(this.entity);
+
+      // Set hitbox dimensions
+      this.entity.body.setSize(this.hitboxW, this.hitboxH);
+      this.entity.body.moves = false;
+    }
+  };
+  
+})();
+},{}],5:[function(require,module,exports){
 ;(function() {
   'use strict';
   
   var Gorgatron = module.exports = function Gorgatron(game) {
     this.game = game;
     this.entity = null;
-    this.emotion = null;
     this.hitboxW = 46;
     this.hitboxH = 38;
     this.fps = 12;
-    this.hit = false;
+    this.hearts = null;
+    this.startTime = 0;
   };
   
   Gorgatron.prototype = {
+    readyForBattle: false,
     getEntity: function getEntity() {
       return this.entity;
     },
@@ -137,11 +231,6 @@
         'die',
         ['gorgatron/die']
       );
-      this.emotion = this.game.add.sprite(
-        posX,
-        posY,
-        'gorgatron'
-      );
 
       // Enable physics
       this.game.physics.arcade.enable(this.entity);
@@ -149,72 +238,169 @@
       // Set hitbox dimensions
       this.entity.body.setSize(this.hitboxW, this.hitboxH);
       this.entity.body.moves = false;
-      
-      var gorgatron = this;
-      setTimeout(function () {
-        gorgatron.stomp();
-      }, 200);
+
+      this.hearts = this.game.add.group(this.entity);
+
+      var deltaY = 12;
+      var numHearts = 3;
+
+      for (var i = 1; i <= numHearts; i++) {
+        this.hearts.create(parseInt(this.hitboxW/2), -(i*deltaY), 'gorgatron', 'gorgatron/heart', false);
+      }
+
+      this.startTime = this.game.time.time;
     },
     update: function update() {
-      if (this.hit) {
+      if (!this.entity.alive) {
+        this.readyForBattle = false;
         this.entity.animations.play('die', this.fps, true);
+        this.game.add.sprite(
+          this.entity.x + 16,
+          this.entity.y - 12,
+          'gorgatron',
+          'gorgatron/broken-heart'
+        );
+        return;
+      }
+      
+      if (this.readyForBattle === false && this.startTime < this.game.time.time-200) {
+        this.stomp();
       }
     },
     stomp: function stomp() {
-      this.entity.animations.play('stomp', this.fps, true);
-      var entity = this;
-      setTimeout(function () {
-        entity.entity.animations.stop('stomp', true);
-        entity.emoteLove();
-      }, 2000);
+      var gorgatron = this;
+      var playTimes = 4;
+      var animation = this.entity.animations.play('stomp', this.fps, true);
+      animation.onLoop.add(function() {
+        if (animation.loopCount >= playTimes) {
+          animation.stop();
+          gorgatron.showLove();
+        }
+      });
     },
-    emoteLove: function emoteLove() {
-      var x = parseInt(this.entity.x+(this.hitboxW/2));
-      var y = this.entity.y;
-      var index = 0;
-      var deltaY = 12;
-      var playTimes = 0;
-      var maxPlayTimes = 3;
-      var hearts = [
-        this.game.add.sprite(x, y - (1*deltaY), 'gorgatron', 'gorgatron/heart'),
-        this.game.add.sprite(x, y - (2*deltaY), 'gorgatron', 'gorgatron/heart'),
-        this.game.add.sprite(x, y - (3*deltaY), 'gorgatron', 'gorgatron/heart')
-      ];
-
-      // hide hearts
-      for (var i = 0; i < hearts.length; i++) {
-        hearts[i].visible = false;
-      } 
-
-      var animateLove = setInterval(function() {
-        // Reset
-        if (index >= hearts.length) {
-          index = 0;
-          hideHearts();
-
-          // End ?
-          if (++playTimes >= maxPlayTimes) {
-            clearInterval(animateLove);
-          }
-          return;
-        }
-        
-        hearts[index].visible = true;
-        index++;
-      }, 200);
-
-      function hideHearts()
-      {
-        for (var i = 0; i < hearts.length; i++) {
-          hearts[i].visible = false;
-        }
+    showLove: function showLove() {
+      /*
+      for (var i = 0; i < this.hearts.children.length; i++) {
+        this.hearts.children[i].visible = true;
       }
+      */
+      this.readyForBattle = true;
+      
     }
   };
   
 })();
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
+  var Level2 = require('./level2.js');
+  var Player = require('./player.js');
+  var Goal = require('./goal.js');
+  var player;
+  var goal;
+  var map;
+  var layer;
+  
+  var Level1 = module.exports = function Level1() {
+
+  };
+  
+  Level1.prototype = {
+    preload: function () {
+      player = new Player(this);
+      goal = new Goal(this);
+    },
+    create: function () {
+      map = this.add.tilemap('level1');
+      map.addTilesetImage('bg');
+      map.setCollision(1);
+      layer = map.createLayer('walls');
+
+      // Position entities
+      goal.create(136, 56);
+      player.create(138, 182);
+
+      this.state.add('level2', Level2);
+    },
+    update: function () {
+      var state = this;
+
+      // Collide walls
+      state.physics.arcade.collide(player.getEntity(), layer);
+
+      // End of level?
+      state.physics.arcade.collide(player.getEntity(), goal.getEntity(), function () {
+        player.levelComplete(true);
+        setTimeout(
+          function () {
+            state.state.start('level2');
+          },
+          2000
+        );
+      });
+      player.update();
+    }
+  };
+  
+})();
+},{"./goal.js":4,"./level2.js":7,"./player.js":10}],7:[function(require,module,exports){
+;(function() {
+  'use strict';
+  
+  var Level3 = require('./level3.js');
+  var Player = require('./player.js');
+  var Goal = require('./goal.js');
+  var player;
+  var goal;
+  var map;
+  var layer;
+  
+  var Level2 = module.exports = function Level2() {
+
+  };
+  
+  Level2.prototype = {
+    preload: function () {
+      player = new Player(this);
+      goal = new Goal(this);
+    },
+    create: function () {
+      map = this.add.tilemap('level2');
+      map.addTilesetImage('bg');
+      map.setCollision(1);
+      layer = map.createLayer('walls');
+      map.debug = true;
+
+      // Position entities
+      goal.create(50, 96);
+      player.create(88, 76);
+
+      this.state.add('level3', Level3);
+    },
+    update: function () {
+      var state = this;
+
+      // Collide walls
+      state.physics.arcade.collide(player.getEntity(), layer);
+
+      // End of level?
+      state.physics.arcade.collide(player.getEntity(), goal.getEntity(), function () {
+        player.levelComplete(true);
+        setTimeout(
+          function () {
+            state.state.start('level3');
+          },
+          2000
+        );
+      });
+      player.update();
+    }
+  };
+  
+})();
+},{"./goal.js":4,"./level3.js":8,"./player.js":10}],8:[function(require,module,exports){
 ;(function() {
   'use strict';
   
@@ -256,17 +442,32 @@
       // Collide walls
       state.physics.arcade.collide(player.getEntity(), layer);
 
+      // Check for bullet hits
+      state.physics.arcade.overlap(
+        gorgatron.getEntity(),
+        player.getBullets(),
+        function(enemy, bullet) {
+          enemy.kill();
+          enemy.exists = true;
+          enemy.visible = true;
+          player.gameComplete(true);
+        }
+      );
+
       player.update();
       gorgatron.update();
+      if (gorgatron.readyForBattle) {
+        player.inBattle = true;
+      }
     }
   };
   
 })();
-},{"./gorgatron.js":3,"./player.js":6}],5:[function(require,module,exports){
+},{"./gorgatron.js":5,"./player.js":10}],9:[function(require,module,exports){
 ;(function() {
   'use strict';
   
-  var Level1 = require('./level3.js');
+  var Level1 = require('./level1.js');
   
   var Menu = module.exports = function Menu() {
 
@@ -289,9 +490,11 @@
   };
   
 })();
-},{"./level3.js":4}],6:[function(require,module,exports){
+},{"./level1.js":6}],10:[function(require,module,exports){
 ;(function () {
   'use strict';
+  
+  var Bullet = require('./bullet.js');
   
   var Player = module.exports = function Player(game) {
     this.game = game;
@@ -301,13 +504,19 @@
     this.movementSpeed = 100;
     this.hitboxW = 30;
     this.hitboxH = 30;
-    this.fps = 16;
+    this.fps = 20;
+    this.victoryLevelFps = 10;
     this.victoryLevel = false;
     this.victoryGame = false;
     this.walking = false;
+    this.bullets = game.add.group();
   };
   
   Player.prototype = {
+    inBattle: false,
+    getBullets: function getBullets() {
+      return this.bullets;
+    },
     getEntity: function getEntity() {
       return this.entity;
     },
@@ -316,9 +525,6 @@
     },
     gameComplete: function gameComplete(complete) {
       this.victoryGame = complete;
-    },
-    preload:function preload() {
-
     },
     create: function create(posX, posY) {
       this.joystick = this.game.input.keyboard.createCursorKeys();
@@ -354,6 +560,9 @@
       
       // Bind attack
       this.actionButton.onDown.add(this.attack, this);
+      
+      this.bullets.add(new Bullet(this.game));
+      this.game.physics.arcade.enable(this.bullets);
     },
     update: function update() {
       this.entity.body.velocity.x = 0;
@@ -361,7 +570,7 @@
       this.walking = false;
 
       if (this.victoryLevel) {
-        this.entity.animations.play('attack', this.fps, true);
+        this.entity.animations.play('attack', this.victoryLevelFps, true);
         return;        
       }
       if (this.victoryGame) {
@@ -384,6 +593,10 @@
       if (!this.walking) {
         this.resetAnimation('walk');
       }
+      
+      if (this.bulletFired) {
+        this.bullet.update();
+      }
     },
     resetAnimation: function resetAnimation(name) {
       if (name !== null && this.entity.animations.getAnimation(name).isPlaying) {
@@ -402,13 +615,17 @@
     },
     attack: function attack() {
       this.walking = false;
-      this.entity.animations.play('attack', this.fps, false);
-      /*
-      #
-      # TODO: During normal play, swing the sword. If in battle, fire beam.
-      #
-      */
+
+      if (this.inBattle) {
+        this.game.world.bringToTop(this.bullets);
+        var bullet = this.bullets.getFirstDead();
+        if (bullet) {
+          bullet.fire(this.entity.x, this.entity.y, 215, 60);
+        }
+      } else {
+        this.entity.animations.play('attack', this.fps, false);
+      }
     }
   };
 })();
-},{}]},{},[2]);
+},{"./bullet.js":2}]},{},[3]);
